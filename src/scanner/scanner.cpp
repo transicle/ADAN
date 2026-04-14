@@ -112,7 +112,7 @@ void scan(Scanner* scanner) {
                 advance(scanner);
                 break;
             default:
-                create_token(TOKEN_UNKNOWN, string(1, current_char));
+                // create_token(TOKEN_UNKNOWN, string(1, current_char));
                 advance(scanner);
                 break;
         }
