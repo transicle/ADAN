@@ -8,6 +8,11 @@ using namespace std;
 typedef enum {
     TOKEN_EOF,
     TOKEN_UNKNOWN,
+    TOKEN_ERROR,
+
+    // Literals
+    TOKEN_INT_LITERAL,
+    TOKEN_FLOAT_LITERAL,
 
     // Operators
     TOKEN_PLUS,
@@ -30,4 +35,4 @@ Token* create_token(TokenType type, string lexeme);
 
 void free_token(Token* token);
 
-#endif
+#endif // TOKENS

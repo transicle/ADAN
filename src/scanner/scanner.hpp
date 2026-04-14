@@ -18,4 +18,4 @@ void free_scanner(Scanner* scanner);
 
 void scan(Scanner* scanner);
 
-#endif
+#endif // SCANNER

@@ -1,4 +1,5 @@
 #include <string>
+#include <cctype>
 #include "scanner.hpp"
 #include "tokens.hpp"
 
@@ -17,11 +18,11 @@ void free_scanner(Scanner* scanner) {
 
 // Internal helper functions for scanning //
 
-static char peek(Scanner* scanner) {
-    if (scanner->position >= scanner->source.length()) {
+static char peek(Scanner* scanner, int offset = 0) {
+    if (scanner->position + offset >= scanner->source.length()) {
         return '\0'; // EOF
     }
-    return scanner->source[scanner->position];
+    return scanner->source[scanner->position + offset];
 }
 
 static char advance(Scanner* scanner) {
@@ -37,7 +38,7 @@ static char advance(Scanner* scanner) {
 }
 
 static void pass_spaces(Scanner* scanner) {
-    while (isspace(peek(scanner))) {
+    while (isspace((unsigned char)peek(scanner))) {
         advance(scanner);
     }
 }
@@ -49,6 +50,38 @@ void scan(Scanner* scanner) {
 
     while (peek(scanner) != '\0') {
         char current_char = peek(scanner);
+
+        // Probably is unoptimal to check for float literals this way, but it should work for now
+        if (isdigit((unsigned char)current_char)) {
+            int start = scanner->position;
+            while (isdigit((unsigned char)peek(scanner))) {
+                advance(scanner);
+            }
+            if (peek(scanner) == '.') {
+                if (isdigit((unsigned char)peek(scanner, 1))) {
+                    advance(scanner);
+                    while (isdigit((unsigned char)peek(scanner))) {
+                        advance(scanner);
+                    }
+                    create_token(TOKEN_FLOAT_LITERAL, scanner->source.substr(start, scanner->position - start));
+                } else {
+                    create_token(TOKEN_ERROR, scanner->source.substr(start, scanner->position - start) + ".");
+                    advance(scanner);
+                }
+            } else {
+                create_token(TOKEN_INT_LITERAL, scanner->source.substr(start, scanner->position - start));
+            }
+            continue;
+        } else if (peek(scanner) == '.' && isdigit((unsigned char)peek(scanner, 1))) {
+            int start = scanner->position;
+            advance(scanner);
+            while (isdigit((unsigned char)peek(scanner))) {
+                advance(scanner);
+            }
+            create_token(TOKEN_FLOAT_LITERAL, scanner->source.substr(start, scanner->position - start));
+            continue;
+        }
+
         switch (current_char) {
             case '+':
                 create_token(TOKEN_PLUS, "+");
@@ -79,7 +112,7 @@ void scan(Scanner* scanner) {
                 advance(scanner);
                 break;
             default:
-                create_token(TOKEN_UNKNOWN, string(1, current_char).c_str());
+                create_token(TOKEN_UNKNOWN, string(1, current_char));
                 advance(scanner);
                 break;
         }
