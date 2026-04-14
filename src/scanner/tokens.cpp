@@ -1,8 +1,7 @@
 #include <string>
-
 #include "tokens.hpp"
 
-Token* make_token(TokenType type, const char* lexeme) {
+Token* create_token(TokenType type, const char* lexeme) {
     Token* token = new Token;
     token->type = type;
     token->lexeme = string(lexeme);

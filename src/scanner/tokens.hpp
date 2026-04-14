@@ -7,6 +7,7 @@ using namespace std;
 
 typedef enum {
     TOKEN_EOF,
+    TOKEN_UNKNOWN,
 
     // Operators
     TOKEN_PLUS,
@@ -25,7 +26,7 @@ typedef struct {
     string lexeme;
 } Token;
 
-Token* make_token(TokenType type, string lexeme);
+Token* create_token(TokenType type, string lexeme);
 
 void free_token(Token* token);
 
