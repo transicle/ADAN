@@ -18,6 +18,12 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    path source_path(source_file);
+    if (source_path.extension() != ".adn") {
+        cerr << "Error: File '" << source_file << "' is not an ADAN source file." << endl;
+        return 1;
+    }
+
     string source_code;
     try {
         source_code = read_file(source_file);
