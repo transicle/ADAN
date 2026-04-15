@@ -2,9 +2,13 @@
 #define PARSER
 
 #include "../scanner/scanner.hpp"
+#include <vector>
+
+using namespace std;
 
 typedef struct {
     Scanner* scanner;
+    vector<Token*> tokens;
     int position;
     bool has_error;
 } Parser;
