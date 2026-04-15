@@ -1,3 +1,4 @@
+#include "../../tokens/tokens.hpp"
 #include "parser.hpp"
 
 Parser* create_parser(Scanner* scanner) {
@@ -10,4 +11,20 @@ Parser* create_parser(Scanner* scanner) {
 
 void free_parser(Parser* parser) {
     delete parser;
+}
+
+// Helper functions for parsing //
+
+static Token* peek(Parser* parser, int offset = 0) {
+    
+}
+
+static Token* expect(Parser* parser, TokenType type) {
+
+}
+
+// Public API for parsing //
+
+void parse(Parser* parser) {
+
 }
