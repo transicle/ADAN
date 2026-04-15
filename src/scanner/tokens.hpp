@@ -10,6 +10,9 @@ typedef enum {
     TOKEN_UNKNOWN,
     TOKEN_ERROR,
 
+    // Keywords
+    TOKEN_SET,
+
     // Literals
     TOKEN_INT_LITERAL,
     TOKEN_FLOAT_LITERAL,
@@ -20,6 +23,8 @@ typedef enum {
     TOKEN_STAR,
     TOKEN_SLASH,
     TOKEN_PERCENT,
+    TOKEN_EQUAL,
+    TOKEN_SEMICOLON,
     
     // Delimiters
     TOKEN_LPAREN,

@@ -43,6 +43,14 @@ static void pass_spaces(Scanner* scanner) {
     }
 }
 
+static bool is_keyword(Scanner* scanner, const string& keyword) {
+    int length = keyword.length();
+    if (scanner->position + length > scanner->source.length()) {
+        return false;
+    }
+    return scanner->source.substr(scanner->position, length) == keyword;
+}
+
 // Public API for lexical scanning //
 
 void scan(Scanner* scanner) {
@@ -50,6 +58,41 @@ void scan(Scanner* scanner) {
 
     while (peek(scanner) != '\0') {
         char current_char = peek(scanner);
+
+        // Skip comments and stuff
+        if (current_char == '/') {
+            if (peek(scanner, 1) == '/') {
+                // Single-line comment
+                while (peek(scanner) != '\n' && peek(scanner) != '\0') {
+                    advance(scanner);
+                }
+                pass_spaces(scanner);
+                continue;
+            } else if (peek(scanner, 1) == '*') {
+                advance(scanner);
+                advance(scanner);
+                while (!(peek(scanner) == '*' && peek(scanner, 1) == '/') && peek(scanner) != '\0') {
+                    advance(scanner);
+                }
+                if (peek(scanner) == '\0') {
+                    create_token(TOKEN_ERROR, "Unterminated multi-line comment");
+                    return;
+                }
+                advance(scanner);
+                advance(scanner);
+                pass_spaces(scanner);
+                continue;
+            }
+        }
+
+        // Keyword checking
+        if (is_keyword(scanner, "set")) {
+            create_token(TOKEN_SET, "set");
+            scanner->position += 3;
+            scanner->column += 3;
+            pass_spaces(scanner);
+            continue;
+        }
 
         // Probably is unoptimal to check for float literals this way, but it should work for now
         if (isdigit((unsigned char)current_char)) {
@@ -109,6 +152,14 @@ void scan(Scanner* scanner) {
                 break;
             case ')':
                 create_token(TOKEN_RPAREN, ")");
+                advance(scanner);
+                break;
+            case '=':
+                create_token(TOKEN_EQUAL, "=");
+                advance(scanner);
+                break;
+            case ';':
+                create_token(TOKEN_SEMICOLON, ";");
                 advance(scanner);
                 break;
             default:
