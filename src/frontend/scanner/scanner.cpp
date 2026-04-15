@@ -1,7 +1,7 @@
 #include <string>
 #include <cctype>
 #include "scanner.hpp"
-#include "../tokens/tokens.hpp"
+#include "../../tokens/tokens.hpp"
 
 Scanner* create_scanner(const string& source) {
     Scanner* scanner = new Scanner;

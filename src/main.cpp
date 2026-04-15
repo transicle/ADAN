@@ -1,7 +1,7 @@
 #include <iostream>
 #include <filesystem>
 #include "extras/fs.hpp"
-#include "scanner/scanner.hpp"
+#include "frontend/scanner/scanner.hpp"
 
 using namespace std;
 using namespace filesystem;
