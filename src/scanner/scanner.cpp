@@ -51,6 +51,10 @@ static bool is_keyword(Scanner* scanner, const string& keyword) {
     return scanner->source.substr(scanner->position, length) == keyword;
 }
 
+static bool is_ident(char c) {
+    return isalnum((unsigned char)c) || c == '_';
+}
+
 // Public API for lexical scanning //
 
 void scan(Scanner* scanner) {
@@ -90,6 +94,16 @@ void scan(Scanner* scanner) {
             create_token(TOKEN_SET, "set");
             scanner->position += 3;
             scanner->column += 3;
+            pass_spaces(scanner);
+            continue;
+        }
+
+        if (is_ident(current_char)) {
+            int start = scanner->position;
+            while (is_ident(peek(scanner))) {
+                advance(scanner);
+            }
+            create_token(TOKEN_IDENTIFIER, scanner->source.substr(start, scanner->position - start));
             pass_spaces(scanner);
             continue;
         }

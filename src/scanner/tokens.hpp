@@ -9,6 +9,7 @@ typedef enum {
     TOKEN_EOF,
     TOKEN_UNKNOWN,
     TOKEN_ERROR,
+    TOKEN_IDENTIFIER,
 
     // Keywords
     TOKEN_SET,
