@@ -7,29 +7,29 @@ using namespace std;
 
 typedef enum {
     TOKEN_EOF,
-    TOKEN_UNKNOWN,
-    TOKEN_ERROR,
-    TOKEN_IDENTIFIER,
+    UNKNOWN,
+    ERROR,
+    IDENTIFIER,
 
     // Keywords
-    TOKEN_SET,
+    SET,
 
     // Literals
-    TOKEN_INT_LITERAL,
-    TOKEN_FLOAT_LITERAL,
+    INT_LITERAL,
+    FLOAT_LITERAL,
 
     // Operators
-    TOKEN_PLUS,
-    TOKEN_MINUS,
-    TOKEN_STAR,
-    TOKEN_SLASH,
-    TOKEN_PERCENT,
-    TOKEN_EQUAL,
-    TOKEN_SEMICOLON,
+    PLUS,
+    MINUS,
+    STAR,
+    SLASH,
+    PERCENT,
+    EQUAL,
+    SEMICOLON,
     
     // Delimiters
-    TOKEN_LPAREN,
-    TOKEN_RPAREN,
+    LPAREN,
+    RPAREN,
 } TokenType;
 
 typedef struct {

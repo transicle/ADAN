@@ -1,7 +1,7 @@
 #include <string>
+#include <vector>
 #include <cctype>
 #include "scanner.hpp"
-#include "../../tokens/tokens.hpp"
 
 Scanner* create_scanner(const string& source) {
     Scanner* scanner = new Scanner;
@@ -9,10 +9,14 @@ Scanner* create_scanner(const string& source) {
     scanner->line = 1;
     scanner->column = 1;
     scanner->position = 0;
+    scanner->has_error = false;
     return scanner;
 }
 
 void free_scanner(Scanner* scanner) {
+    for (Token* token : scanner->tokens) {
+        free_token(token);
+    }
     delete scanner;
 }
 
@@ -20,7 +24,7 @@ void free_scanner(Scanner* scanner) {
 
 static char peek(Scanner* scanner, int offset = 0) {
     if (scanner->position + offset >= scanner->source.length()) {
-        return '\0'; // EOF
+        return '\0'; // TOKEN_EOF
     }
     return scanner->source[scanner->position + offset];
 }
@@ -43,12 +47,21 @@ static void pass_spaces(Scanner* scanner) {
     }
 }
 
+static void add_token(Scanner* scanner, TokenType type, const string& lexeme) {
+    scanner->tokens.push_back(create_token(type, lexeme));
+}
+
 static bool is_keyword(Scanner* scanner, const string& keyword) {
     int length = keyword.length();
     if (scanner->position + length > scanner->source.length()) {
         return false;
     }
-    return scanner->source.substr(scanner->position, length) == keyword;
+    if (scanner->source.substr(scanner->position, length) != keyword) {
+        return false;
+    }
+
+    char next = peek(scanner, length);
+    return !isalnum((unsigned char)next) && next != '_';
 }
 
 static bool is_ident(char c) {
@@ -58,6 +71,15 @@ static bool is_ident(char c) {
 // Public API for lexical scanning //
 
 void scan(Scanner* scanner) {
+    for (Token* token : scanner->tokens) {
+        free_token(token);
+    }
+    scanner->tokens.clear();
+    scanner->position = 0;
+    scanner->line = 1;
+    scanner->column = 1;
+    scanner->has_error = false;
+
     pass_spaces(scanner);
 
     while (peek(scanner) != '\0') {
@@ -79,7 +101,8 @@ void scan(Scanner* scanner) {
                     advance(scanner);
                 }
                 if (peek(scanner) == '\0') {
-                    create_token(TOKEN_ERROR, "Unterminated multi-line comment");
+                    add_token(scanner, ERROR, "Unterminated multi-line comment");
+                    scanner->has_error = true;
                     return;
                 }
                 advance(scanner);
@@ -91,9 +114,10 @@ void scan(Scanner* scanner) {
 
         // Keyword checking
         if (is_keyword(scanner, "set")) {
-            create_token(TOKEN_SET, "set");
-            scanner->position += 3;
-            scanner->column += 3;
+            add_token(scanner, SET, "set");
+            advance(scanner);
+            advance(scanner);
+            advance(scanner);
             pass_spaces(scanner);
             continue;
         }
@@ -103,7 +127,7 @@ void scan(Scanner* scanner) {
             while (is_ident(peek(scanner))) {
                 advance(scanner);
             }
-            create_token(TOKEN_IDENTIFIER, scanner->source.substr(start, scanner->position - start));
+            add_token(scanner, IDENTIFIER, scanner->source.substr(start, scanner->position - start));
             pass_spaces(scanner);
             continue;
         }
@@ -120,13 +144,14 @@ void scan(Scanner* scanner) {
                     while (isdigit((unsigned char)peek(scanner))) {
                         advance(scanner);
                     }
-                    create_token(TOKEN_FLOAT_LITERAL, scanner->source.substr(start, scanner->position - start));
+                    add_token(scanner, FLOAT_LITERAL, scanner->source.substr(start, scanner->position - start));
                 } else {
-                    create_token(TOKEN_ERROR, scanner->source.substr(start, scanner->position - start) + ".");
+                    add_token(scanner, ERROR, scanner->source.substr(start, scanner->position - start) + ".");
+                    scanner->has_error = true;
                     advance(scanner);
                 }
             } else {
-                create_token(TOKEN_INT_LITERAL, scanner->source.substr(start, scanner->position - start));
+                add_token(scanner, INT_LITERAL, scanner->source.substr(start, scanner->position - start));
             }
             continue;
         } else if (peek(scanner) == '.' && isdigit((unsigned char)peek(scanner, 1))) {
@@ -135,52 +160,55 @@ void scan(Scanner* scanner) {
             while (isdigit((unsigned char)peek(scanner))) {
                 advance(scanner);
             }
-            create_token(TOKEN_FLOAT_LITERAL, scanner->source.substr(start, scanner->position - start));
+            add_token(scanner, FLOAT_LITERAL, scanner->source.substr(start, scanner->position - start));
             continue;
         }
 
         switch (current_char) {
             case '+':
-                create_token(TOKEN_PLUS, "+");
+                add_token(scanner, PLUS, "+");
                 advance(scanner);
                 break;
             case '-':
-                create_token(TOKEN_MINUS, "-");
+                add_token(scanner, MINUS, "-");
                 advance(scanner);
                 break;
             case '*':
-                create_token(TOKEN_STAR, "*");
+                add_token(scanner, STAR, "*");
                 advance(scanner);
                 break;
             case '/':
-                create_token(TOKEN_SLASH, "/");
+                add_token(scanner, SLASH, "/");
                 advance(scanner);
                 break;
             case '%':
-                create_token(TOKEN_PERCENT, "%");
+                add_token(scanner, PERCENT, "%");
                 advance(scanner);
                 break;
             case '(':
-                create_token(TOKEN_LPAREN, "(");
+                add_token(scanner, LPAREN, "(");
                 advance(scanner);
                 break;
             case ')':
-                create_token(TOKEN_RPAREN, ")");
+                add_token(scanner, RPAREN, ")");
                 advance(scanner);
                 break;
             case '=':
-                create_token(TOKEN_EQUAL, "=");
+                add_token(scanner, EQUAL, "=");
                 advance(scanner);
                 break;
             case ';':
-                create_token(TOKEN_SEMICOLON, ";");
+                add_token(scanner, SEMICOLON, ";");
                 advance(scanner);
                 break;
             default:
-                // create_token(TOKEN_UNKNOWN, string(1, current_char));
+                add_token(scanner, UNKNOWN, string(1, current_char));
+                scanner->has_error = true;
                 advance(scanner);
                 break;
         }
         pass_spaces(scanner);
     }
+
+    add_token(scanner, TOKEN_EOF, "");
 }

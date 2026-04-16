@@ -1,8 +1,9 @@
 #ifndef PARSER
 #define PARSER
 
-#include "../scanner/scanner.hpp"
 #include <vector>
+#include "../scanner/scanner.hpp"
+#include "../../ast/ast.hpp"
 
 using namespace std;
 
@@ -11,6 +12,7 @@ typedef struct {
     vector<Token*> tokens;
     int position;
     bool has_error;
+    ASTNode* ast;
 } Parser;
 
 Parser* create_parser(Scanner* scanner);

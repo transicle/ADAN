@@ -2,6 +2,8 @@
 #include <filesystem>
 #include "extras/fs.hpp"
 #include "frontend/scanner/scanner.hpp"
+#include "frontend/parser/parser.hpp"
+#include "ast/ast.hpp"
 
 using namespace std;
 using namespace filesystem;
@@ -35,9 +37,21 @@ int main(int argc, char* argv[]) {
     Scanner* scanner = create_scanner(source_code);
     scan(scanner);
 
+    Parser* parser = create_parser(scanner);
+    parse(parser);
+    ASTNode* ast = parser->ast;
+
+    int exit_code = 0;
+    if (scanner->has_error || parser->has_error || !ast) {
+        cerr << "Failed to build AST from source." << endl;
+        exit_code = 1;
+    }
+
     // Freeing allocated resources //
 
+    free_ast(ast);
+    free_parser(parser);
     free_scanner(scanner);
     
-    return 0;
+    return exit_code;
 }
