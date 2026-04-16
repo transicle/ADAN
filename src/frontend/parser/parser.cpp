@@ -3,15 +3,25 @@
 #include "../../ast/ast.hpp"
 
 static Token* peek(Parser* parser, int offset = 0);
+
 static Token* advance_token(Parser* parser);
+
 static Token* expect(Parser* parser, TokenType type, const string& error_message);
+
 static ASTNode* parse_program(Parser* parser);
+
 static ASTNode* parse_statement(Parser* parser);
+
 static ASTNode* parse_declaration(Parser* parser);
+
 static ASTNode* parse_assignment(Parser* parser);
+
 static ASTNode* parse_expression_statement(Parser* parser);
+
 static ASTNode* parse_infix(Parser* parser, ASTNode* left);
+
 static ASTNode* parse_expression(Parser* parser, int precedence = 0);
+
 static ASTNode* parse_prefix(Parser* parser);
 
 Parser* create_parser(Scanner* scanner) {
