@@ -1,0 +1,1 @@
+python3 src/main.py || python src/main.py
