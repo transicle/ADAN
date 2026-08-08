@@ -27,10 +27,8 @@ impl Lexer {
         self.peek(0)
     }
 
-    fn consume(&mut self) -> char {
-        let c = self.current();
+    fn consume(&mut self) {
         self.position += 1;
-        c
     }
 
     fn at_end(&self) -> bool {
@@ -40,12 +38,113 @@ impl Lexer {
     // pub
 
     pub fn lex(&mut self) -> Vec<Token> {
-        let tokens = Vec::new();
+        let mut tokens = Vec::new();
 
         while !self.at_end() {
-            // @todo actually do shit lol
+            let current = self.current();
 
-            self.consume();
+            match current {
+                ' ' | '\0' | '\r' | '\t' => {
+                    self.consume();
+                }
+
+                c if c.is_alphabetic() || c == '_' => {
+                    let token = self.read_ident();
+                    tokens.push(token);
+                }
+
+                c if c.is_ascii_digit() => {
+                    let token = self.read_number();
+                    tokens.push(token);
+                }
+
+                // regular symbols
+                ':' => {
+                    self.consume();
+                    tokens.push(Token {
+                        lexeme: ":".to_string(),
+                        token_type: TokenType::TokenColon,
+                    });
+                }
+
+                '=' => {
+                    self.consume();
+                    tokens.push(Token {
+                        lexeme: "=".to_string(),
+                        token_type: TokenType::TokenEqual,
+                    });
+                }
+
+                '(' => {
+                    self.consume();
+                    tokens.push(Token {
+                        lexeme: "(".to_string(),
+                        token_type: TokenType::TokenLeftParen,
+                    });
+                }
+
+                ')' => {
+                    self.consume();
+                    tokens.push(Token {
+                        lexeme: ")".to_string(),
+                        token_type: TokenType::TokenRightParen,
+                    });
+                }
+
+                '*' => {
+                    self.consume();
+                    tokens.push(Token {
+                        lexeme: "*".to_string(),
+                        token_type: TokenType::TokenMul,
+                    });
+                }
+
+                '/' => {
+                    self.consume();
+                    tokens.push(Token {
+                        lexeme: "/".to_string(),
+                        token_type: TokenType::TokenDiv,
+                    });
+                }
+
+                '+' => {
+                    self.consume();
+                    tokens.push(Token {
+                        lexeme: "+".to_string(),
+                        token_type: TokenType::TokenAdd,
+                    });
+                }
+
+                '-' => {
+                    self.consume();
+                    tokens.push(Token {
+                        lexeme: "-".to_string(),
+                        token_type: TokenType::TokenSub,
+                    });
+                }
+
+                '%' => {
+                    self.consume();
+                    tokens.push(Token {
+                        lexeme: "%".to_string(),
+                        token_type: TokenType::TokenMod,
+                    });
+                }
+
+                '.' => {
+                    self.consume();
+                    tokens.push(Token {
+                        lexeme: ".".to_string(),
+                        token_type: TokenType::TokenPeriod,
+                    });
+                }
+
+                // boring unhandled stufff
+                _ => {
+                    println!("Unknown symbol: \"{}\"", current);
+                    self.consume();
+                }
+            }
         }
 
         tokens
@@ -53,7 +152,46 @@ impl Lexer {
 
     // helpers
 
-    fn read_number(&mut self) -> Token {}
+    fn get_keyword(&self, keyword: &str) -> Option<TokenType> {
+        match keyword {
+            "let" => Some(TokenType::TokenLet),
+            _ => None,
+        }
+    }
 
-    fn read_ident(&mut self) -> Token {}
+    fn read_ident(&mut self) -> Token {
+        let start = self.position;
+
+        while self.current().is_alphanumeric() || self.current() == '_' {
+            self.consume();
+        }
+
+        let lexeme: String = self.source[start..self.position].iter().collect();
+        let token_type = self.get_keyword(&lexeme).unwrap_or(TokenType::TokenIdent);
+
+        Token { lexeme, token_type }
+    }
+
+    fn read_number(&mut self) -> Token {
+        let start = self.position;
+        let mut is_float = false;
+
+        while self.current().is_ascii_digit()
+            || (self.current() == '.' && !is_float && self.peek_next().is_ascii_digit())
+        {
+            if self.current() == '.' {
+                is_float = true;
+            }
+            self.consume();
+        }
+
+        let lexeme: String = self.source[start..self.position].iter().collect();
+        let token_type = if is_float {
+            TokenType::TokenFloat
+        } else {
+            TokenType::TokenInt
+        };
+
+        Token { token_type, lexeme }
+    }
 }

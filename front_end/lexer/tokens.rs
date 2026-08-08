@@ -1,6 +1,6 @@
 #[derive(Debug)]
 pub enum TokenType {
-    TokenEof,
+    TokenIdent,
 
     //  KEYWORDS
     TokenLet,
@@ -19,12 +19,11 @@ pub enum TokenType {
     TokenMod,
     TokenLeftParen,
     TokenRightParen,
+    TokenPeriod,
 }
 
 #[derive(Debug)]
 pub struct Token {
-    lexeme: String,
-    token_type: TokenType,
-    line: u32,
-    column: u32,
+    pub lexeme: String,
+    pub token_type: TokenType,
 }
