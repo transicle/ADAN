@@ -44,7 +44,7 @@ impl Lexer {
             let current = self.current();
 
             match current {
-                ' ' | '\0' | '\r' | '\t' => {
+                ' ' | '\0' | '\r' | '\t' | '\n' => {
                     self.consume();
                 }
 
