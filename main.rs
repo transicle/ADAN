@@ -66,12 +66,13 @@ fn main() {
 
     let tokens = lexer.lex();
     for token in &tokens {
-        println!("{:?} -> {}", token.token_type, token.lexeme);
+        println!("{:?}", token);
     }
 }
 
 fn show_main_message() {
-    println!("\x1b[1mUsage:\x1b[0m adan \x1b[2m[options]\x1b[0m <file>
+    println!(
+        "\x1b[1mUsage:\x1b[0m adan \x1b[2m[options]\x1b[0m <file>
     
 \x1b[1mArguments:\x1b[0m
     \x1b[32m--version\x1b[0m, \x1b[32m-v\x1b[0m     Get your version of ADAN that's on your machine.
@@ -84,5 +85,6 @@ repository over on GitHub!
 
   ➤  \x1b[1;3;34mhttps://github.adan.sh/\x1b[0m
 
-For reporting a bug, please create a new issue on GitHub.\n");
+For reporting a bug, please create a new issue on GitHub.\n"
+    );
 }

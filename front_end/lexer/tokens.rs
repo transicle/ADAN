@@ -1,29 +1,22 @@
 #[derive(Debug)]
+#[allow(unused)] // genuinely have to put this, because they are used..
 pub enum TokenType {
-    TokenIdent,
+    TokenIdent(String),
 
-    //  KEYWORDS
     TokenLet,
 
-    //  TYPES
-    TokenInt,
-    TokenFloat,
+    TokenInt(String),
+    TokenFloat(String),
 
-    //  SYMBOLS
     TokenEqual,
     TokenColon,
-    TokenSub,
-    TokenAdd, // also is used for unary negation
-    TokenMul,
-    TokenDiv,
-    TokenMod,
     TokenLeftParen,
     TokenRightParen,
     TokenPeriod,
-}
 
-#[derive(Debug)]
-pub struct Token {
-    pub lexeme: String,
-    pub token_type: TokenType,
+    TokenSub, // also is used for unary negation
+    TokenAdd,
+    TokenMul,
+    TokenDiv,
+    TokenMod,
 }

@@ -1,4 +1,4 @@
-use super::tokens::{Token, TokenType};
+use super::tokens::TokenType;
 
 pub struct Lexer {
     pub source: Vec<char>,
@@ -7,7 +7,7 @@ pub struct Lexer {
 
 impl Lexer {
     pub fn new(source: String) -> Self {
-        Lexer {
+        Self {
             source: source.chars().collect(),
             position: 0,
         }
@@ -37,7 +37,7 @@ impl Lexer {
 
     // pub
 
-    pub fn lex(&mut self) -> Vec<Token> {
+    pub fn lex(&mut self) -> Vec<TokenType> {
         let mut tokens = Vec::new();
 
         while !self.at_end() {
@@ -61,82 +61,52 @@ impl Lexer {
                 // regular symbols
                 ':' => {
                     self.consume();
-                    tokens.push(Token {
-                        lexeme: ":".to_string(),
-                        token_type: TokenType::TokenColon,
-                    });
+                    tokens.push(TokenType::TokenColon);
                 }
 
                 '=' => {
                     self.consume();
-                    tokens.push(Token {
-                        lexeme: "=".to_string(),
-                        token_type: TokenType::TokenEqual,
-                    });
+                    tokens.push(TokenType::TokenEqual);
                 }
 
                 '(' => {
                     self.consume();
-                    tokens.push(Token {
-                        lexeme: "(".to_string(),
-                        token_type: TokenType::TokenLeftParen,
-                    });
+                    tokens.push(TokenType::TokenLeftParen);
                 }
 
                 ')' => {
                     self.consume();
-                    tokens.push(Token {
-                        lexeme: ")".to_string(),
-                        token_type: TokenType::TokenRightParen,
-                    });
+                    tokens.push(TokenType::TokenRightParen);
                 }
 
                 '*' => {
                     self.consume();
-                    tokens.push(Token {
-                        lexeme: "*".to_string(),
-                        token_type: TokenType::TokenMul,
-                    });
+                    tokens.push(TokenType::TokenMul);
                 }
 
                 '/' => {
                     self.consume();
-                    tokens.push(Token {
-                        lexeme: "/".to_string(),
-                        token_type: TokenType::TokenDiv,
-                    });
+                    tokens.push(TokenType::TokenDiv);
                 }
 
                 '+' => {
                     self.consume();
-                    tokens.push(Token {
-                        lexeme: "+".to_string(),
-                        token_type: TokenType::TokenAdd,
-                    });
+                    tokens.push(TokenType::TokenAdd);
                 }
 
                 '-' => {
                     self.consume();
-                    tokens.push(Token {
-                        lexeme: "-".to_string(),
-                        token_type: TokenType::TokenSub,
-                    });
+                    tokens.push(TokenType::TokenSub);
                 }
 
                 '%' => {
                     self.consume();
-                    tokens.push(Token {
-                        lexeme: "%".to_string(),
-                        token_type: TokenType::TokenMod,
-                    });
+                    tokens.push(TokenType::TokenMod);
                 }
 
                 '.' => {
                     self.consume();
-                    tokens.push(Token {
-                        lexeme: ".".to_string(),
-                        token_type: TokenType::TokenPeriod,
-                    });
+                    tokens.push(TokenType::TokenPeriod);
                 }
 
                 // boring unhandled stufff
@@ -159,7 +129,7 @@ impl Lexer {
         }
     }
 
-    fn read_ident(&mut self) -> Token {
+    fn read_ident(&mut self) -> TokenType {
         let start = self.position;
 
         while self.current().is_alphanumeric() || self.current() == '_' {
@@ -167,12 +137,14 @@ impl Lexer {
         }
 
         let lexeme: String = self.source[start..self.position].iter().collect();
-        let token_type = self.get_keyword(&lexeme).unwrap_or(TokenType::TokenIdent);
+        let token_type = self
+            .get_keyword(&lexeme)
+            .unwrap_or(TokenType::TokenIdent(lexeme));
 
-        Token { lexeme, token_type }
+        token_type
     }
 
-    fn read_number(&mut self) -> Token {
+    fn read_number(&mut self) -> TokenType {
         let start = self.position;
         let mut is_float = false;
 
@@ -187,11 +159,11 @@ impl Lexer {
 
         let lexeme: String = self.source[start..self.position].iter().collect();
         let token_type = if is_float {
-            TokenType::TokenFloat
+            TokenType::TokenFloat(lexeme)
         } else {
-            TokenType::TokenInt
+            TokenType::TokenInt(lexeme)
         };
 
-        Token { token_type, lexeme }
+        token_type
     }
 }
