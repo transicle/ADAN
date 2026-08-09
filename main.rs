@@ -36,12 +36,10 @@ fn main() {
 
     if args.help {
         show_main_message();
-        std::process::exit(0);
     }
 
     if args.version {
-        println!("Compiler on {}", COMPILER_VERSION);
-        std::process::exit(0);
+        println!("Compiler on {}\n", COMPILER_VERSION);
     }
 
     let filepath = match args.filepath {
@@ -82,5 +80,5 @@ repository over on GitHub!
 
   ➤  \x1b[1;3;34mhttps://github.adan.sh/\x1b[0m
 
-For reporting a bug, please create a new issue on GitHub.");
+For reporting a bug, please create a new issue on GitHub.\n");
 }
