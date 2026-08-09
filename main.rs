@@ -8,8 +8,12 @@ use std::fs;
 const COMPILER_VERSION: &str = "version-1.0.2";
 
 #[derive(Parser, Debug)]
-#[command(version, about = "The ADAN programming language compiler.", long_about = None)]
-#[command(disable_help_flag = true, disable_version_flag = true)]
+#[command(
+    about = "The ADAN programming language compiler.",
+    long_about = None,
+    disable_help_flag = true,
+    disable_version_flag = true,
+)]
 struct Args {
     #[arg(required_unless_present_any = ["help", "version"])]
     filepath: Option<String>,
