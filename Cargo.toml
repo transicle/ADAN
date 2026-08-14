@@ -9,4 +9,3 @@ rand = "0.10.2"
 
 [[bin]]
 name = "adan"
-path = "main.rs"

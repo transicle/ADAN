@@ -1,9 +1,9 @@
-use clap::Parser;
+mod lexer;
+mod tokens;
 
-mod front_end;
-use front_end::lexer::lexer::Lexer;
-
+use lexer::Lexer;
 use std::fs;
+use clap::Parser;
 
 const COMPILER_VERSION: &str = "version-1.0.2";
 
@@ -62,7 +62,7 @@ fn main() {
         }
     };
 
-    let mut lexer = Lexer::new(source);
+    let mut lexer = Lexer::new(source.as_str());
 
     let tokens = lexer.lex();
     for token in &tokens {
