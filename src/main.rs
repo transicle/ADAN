@@ -1,5 +1,4 @@
 mod lexer;
-mod tokens;
 
 use lexer::Lexer;
 use std::fs;
@@ -63,8 +62,8 @@ fn main() {
     };
 
     let mut lexer = Lexer::new(source.as_str());
-
     let tokens = lexer.lex();
+    
     for token in &tokens {
         println!("{:?}", token);
     }
